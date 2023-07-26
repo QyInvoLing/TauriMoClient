@@ -2,11 +2,14 @@
  * @Author: QyInvoLing
  * @Date: 2023-07-26 16:06:14
  * @LastEditors: QyInvoLing
- * @LastEditTime: 2023-07-26 16:41:42
+ * @LastEditTime: 2023-07-26 17:57:04
  * @FilePath: \tauri-mo-client\src-tauri\src\generate_ini.rs
  * @Description: 
  */
-fn generateSpawn() {//接受playerinfo对象数组
+
+
+#[tauri::command]
+pub fn generateSpawn()->&'static str {//接受playerinfo对象数组
     //太长了，两百多行没注释，狗都不看
     /**
      //删掉旧的spawn.ini
@@ -57,8 +60,10 @@ Map.ApplySpawnIniCode(spawnIni, Players.Count + AIPlayers.Count, AIPlayers.Count
 
 整个过程涉及地图和玩家的各种设置和选项，用于配置初始游戏状态和参数。
      */
+    return ""
 }
-fn generateSpawnMap() {
+#[tauri::command]
+pub fn generateSpawnMap() {
     //删除旧的
 
     //从Map.CompleteFilePath获取这个地图的mapini

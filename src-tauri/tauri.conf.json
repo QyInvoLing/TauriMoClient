@@ -37,7 +37,7 @@
       {
         "fullscreen": false,
         "resizable": true,
-        "title": "tauri-mo-client",
+        "title": "Tauri MO Client",
         "width": 800,
         "height": 600
       }

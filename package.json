@@ -10,14 +10,20 @@
     "tauri": "tauri"
   },
   "dependencies": {
+    "@arco-design/web-vue": "^2.49.1",
+    "@tauri-apps/api": "^1.4.0",
+    "naive-ui": "^2.34.4",
+    "unplugin-auto-import": "^0.16.6",
+    "unplugin-vue-components": "^0.25.1",
     "vue": "^3.3.4",
-    "@tauri-apps/api": "^1.4.0"
+    "vue-i18n": "^9.2.2",
+    "vue-router": "^4.2.4"
   },
   "devDependencies": {
+    "@tauri-apps/cli": "^1.4.0",
     "@vitejs/plugin-vue": "^4.2.3",
     "typescript": "^5.0.2",
     "vite": "^4.4.4",
-    "vue-tsc": "^1.8.5",
-    "@tauri-apps/cli": "^1.4.0"
+    "vue-tsc": "^1.8.5"
   }
 }
