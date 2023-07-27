@@ -23,6 +23,14 @@ const router = createRouter({
                 requiresAuth: false,
             },
         },
+        {
+            path: '/lobby',
+            name: 'lobby',
+            component: () => import('@/views/lobby/index.vue'),
+            meta: {
+                requiresAuth: true,
+            },
+        },
 
     ],
     scrollBehavior() {

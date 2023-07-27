@@ -1,20 +1,23 @@
+/*
+ * @Author: QyInvoLing
+ * @Date: 2023-07-26 14:10:32
+ * @LastEditors: QyInvoLing
+ * @LastEditTime: 2023-07-27 11:21:51
+ * @FilePath: \tauri-mo-client\src\main.ts
+ * @Description: 
+ */
 import { createApp } from "vue";
-import router from '@/router/router';
 import "./styles.css";
-import App from "./App.vue";
-//import { app, window } from '@tauri-apps/api';
+import ArcoVue from '@arco-design/web-vue';
+import '@arco-design/web-vue/dist/arco.css';
+import router from '@/router/router';
+import { store } from '@/store/index'
+import App from './App.vue';
+
+
 const app = createApp(App)
-// app.init({
-//     tauri: {
-//       // 其他配置
-//       // ...
-//       window: {
-//         menu: false, // 是否启用菜单栏
-//         title: 'Tauri MO Client——兰博玩你麻痹', // 窗口标题
-//         width: 800, // 初始窗口宽度
-//         height: 600, // 初始窗口高度
-//       }
-//     }
-//   });
+
 app.use(router)
+app.use(store)
+app.use(ArcoVue)
 app.mount("#app");

@@ -1,0 +1,1 @@
+export const server = "https://mo.qyinvoling.tech"

@@ -13,6 +13,7 @@
     "@arco-design/web-vue": "^2.49.1",
     "@tauri-apps/api": "^1.4.0",
     "naive-ui": "^2.34.4",
+    "pinia": "^2.1.6",
     "unplugin-auto-import": "^0.16.6",
     "unplugin-vue-components": "^0.25.1",
     "vue": "^3.3.4",
