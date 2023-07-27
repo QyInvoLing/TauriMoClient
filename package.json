@@ -12,13 +12,15 @@
   "dependencies": {
     "@arco-design/web-vue": "^2.49.1",
     "@tauri-apps/api": "^1.4.0",
+    "@types/websocket": "^1.0.5",
     "naive-ui": "^2.34.4",
     "pinia": "^2.1.6",
     "unplugin-auto-import": "^0.16.6",
     "unplugin-vue-components": "^0.25.1",
     "vue": "^3.3.4",
     "vue-i18n": "^9.2.2",
-    "vue-router": "^4.2.4"
+    "vue-router": "^4.2.4",
+    "websocket": "^1.0.34"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^1.4.0",

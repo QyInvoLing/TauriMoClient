@@ -56,7 +56,7 @@ import { useAccountStore } from '@/store/account'
 import { sleep } from '@/utils/utils'
 import router from '@/router/router'
 import { login } from './api'
-import { changeWindowSize, setResizeable } from '@/api/window'
+import { setResizeable } from '@/api/window'
 const store = useAccountStore()
 const userInfo = ref({ username: "", password: "" })
 const loading = ref(false)
@@ -94,7 +94,7 @@ const handleSubmit = async () => {
 const redirectToLobby = async () => {
     //允许界面自由拉伸，然后进入大厅
     setResizeable(true)
-    await sleep(2000)
+    await sleep(1000)
     router.push({name: 'lobby'})
 }
 const clickRegisterButton = () => {
@@ -114,7 +114,7 @@ const passwordRule = [{ required: true, message: '请输入密码' },
 { maxLength: 16, message: '密码长度至多为16个字符' }]
 
 onMounted(() => {
-    changeWindowSize(400, 500)
+    // changeWindowSize(400, 500)
     setResizeable(false)
     const localUsername = localStorage.getItem("username")
     const localPassword = localStorage.getItem("password")

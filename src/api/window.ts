@@ -1,8 +1,16 @@
-import { appWindow, LogicalSize } from '@tauri-apps/api/window'
-export const changeWindowSize = async (width: number, height: number) => {
-    await appWindow.setSize(new LogicalSize(width, height))
-    
+import { appWindow, PhysicalSize } from '@tauri-apps/api/window'
+/**更改窗口大小
+ * 
+ * 传入参数不合法时，自动设置为800x600
+ * @param width 
+ * @param height 
+ */
+export const changeWindowSize = async (width: number | string | null, height: number | string | null) => {
+    let checkedWidth = width == null ? 800 : parseInt("" + width)
+    let checkedHeight = width == null ? 700 : parseInt("" + height)
+    await appWindow.setSize(new PhysicalSize(checkedWidth, checkedHeight))
+
 }
-export const setResizeable =async (swit:boolean)=>{
+export const setResizeable = async (swit: boolean) => {
     await appWindow.setResizable(swit)
 }
