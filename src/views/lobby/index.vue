@@ -1,9 +1,9 @@
 <template>
-    <a-tabs :animation="true" v-model:active-key="currentTabIndex" class="lobby-tabs">
+    <a-tabs class="lobby-tabs" :animation="true" v-model:active-key="currentTabIndex" >
         <template #extra>
             <a-button @click="manuallyLeaveLobby">退出大厅</a-button>
         </template>
-        <a-tab-pane key="1" title="大厅">
+        <a-tab-pane  key="1" title="大厅">
             <a-layout class="lobby-container">
                 <a-layout-header>大厅</a-layout-header>
                 <a-layout>
@@ -112,6 +112,6 @@ onUnmounted(() => {
 
 .lobby-container {
     width: 100%;
-    height: 100%;
-}
+    height: 85vh;
+} 
 </style>@/api/websocket/websocket

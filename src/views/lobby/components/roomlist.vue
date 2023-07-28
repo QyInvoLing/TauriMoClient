@@ -1,7 +1,7 @@
 <template>
     <div class="roomlist-container">
-        <a-table :columns="columns" :pagination="false" :data="lobbyStore.roomlist" :scroll="scrollbarOptions" :scrollbar="true"
-            @row-click="handleRowClick">
+        <a-table :columns="columns" :pagination="false" :data="lobbyStore.roomlist" :scroll="{ y: '100%' }"
+            :scrollbar="true" @row-click="handleRowClick">
             <template #players="{ record }">
                 <!-- 这里的record应该指的是data数组内的对象 -->
                 <a-tooltip :content="record.players.join('\n')">
@@ -15,9 +15,6 @@
 import { useLobbyStore } from '@/store/lobby'
 const emit = defineEmits(["enterRoom"])
 const lobbyStore = useLobbyStore()
-const scrollbarOptions = {
-    y: "100%"
-}
 const columns = [
     {
         title: '房间名',

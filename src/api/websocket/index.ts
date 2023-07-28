@@ -18,10 +18,17 @@ export const connect = (jwt: string) => {
         const pingTimer = setInterval(ping, 3000)
         ws.onopen = () => {// 连接建立后
             console.log("[INFO]WebSocket连接建立成功，开始鉴权.")
+            /**
+             * 普通消息回调
+             * 
+             * 如果是Rpc消息，就跳过
+             */
             ws.addEventListener("message", (event) => {
                 let message = JSON.parse(event.data) as Message
                 console.log("[INFO]收到服务端消息：", message)
-                executeCallbacks(message.name, message.data)
+                if (message.id == undefined) {//不是rpc消息才执行回调
+                    executeCallbacks(message.name, message.data)
+                }
             })
             sendMessage("auth", { jwt })//发送鉴权消息
             //心跳包，防止断开连接
@@ -94,10 +101,9 @@ const executeCallbacks = (eventName: string, ...args: any[]) => {
 interface Message {
     name: string
     data: any
+    id?: number
 }
-interface RpcMessage extends Message {
-    id: number
-}
+
 
 //没写完
 
@@ -111,7 +117,7 @@ export const sendRpcMessage = (name: string, message: object = {}) => {
     return new Promise((resolve, reject) => {
         // 收到消息时，将Promise解决并传递接收到的消息
         const rpcHandler = (event: MessageEvent) => {
-            let returnMessage = JSON.parse(event.data) as RpcMessage
+            let returnMessage = JSON.parse(event.data) as Message
             if (messageId == returnMessage.id) {
                 console.info(`[INFO]Rpc消息${messageId}得到回应：`, returnMessage.data)
                 ws.removeEventListener("message", rpcHandler)
