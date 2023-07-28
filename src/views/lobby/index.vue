@@ -95,7 +95,7 @@ onMounted(async () => {
 
 })
 onUnmounted(() => {
-
+    unregisterCallback("close", "leaveLobbyOnWebSocketClose")
 })
 </script>
 <style scoped>
