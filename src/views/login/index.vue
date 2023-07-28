@@ -142,4 +142,4 @@ onMounted(() => {
     margin-left: 10vw;
 }
 </style>
-  
+  @/api/websocket/websocket

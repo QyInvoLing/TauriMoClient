@@ -1,5 +1,5 @@
 //import WebSocket from 'websocket'
-import { webSocketServer } from './server'
+import { webSocketServer } from '@/api/server'
 
 const callbacks: Record<string, Callback[]> = {}
 interface Callback {
@@ -7,7 +7,7 @@ interface Callback {
     callback: Function
 }
 let ws: WebSocket
-
+//初始化连接
 export const connect = (jwt: string) => {
     ws = new WebSocket(webSocketServer + "/ws")
     ws.onopen = () => {// 连接建立后
@@ -15,10 +15,13 @@ export const connect = (jwt: string) => {
         ws.addEventListener("message", (event) => {
             console.log("[INFO]收到服务端消息：", event.data)
         })
-        sendCommand({ jwt })//发送鉴权消息
+        sendMessage({ name: "auth", data: { jwt } })//发送鉴权消息
     }
+    const ping = ()=>{sendMessage({name:"ping",data:""})}
+    const pingTimer = setInterval(ping, 3000)
     ws.onclose = () => {//注册断开回调，以便于在连接断开时进行处理
         executeCallbacks("close")
+        clearInterval(pingTimer)
     }
 }
 export const disconnect = () => {
@@ -57,6 +60,7 @@ export const unregisterCallback = (eventName: string, name: string) => {
         }
     }
 }
+//触发某事件所有回调
 const executeCallbacks = (eventName: string) => {
     if (callbacks.hasOwnProperty(eventName)) {
         callbacks["close"].map(callback => {
@@ -65,13 +69,36 @@ const executeCallbacks = (eventName: string) => {
         })
     }
 }
+interface Message {
+    name: string
+    data: any
+}
+interface RpcMessage extends Message {
+    id: number
+}
+
 //没写完
-export const sendCommand = (object: object) => {
-    ws.send(JSON.stringify(object))
+
+export const sendMessage = <T extends Message>(message: T) => {
+    ws.send(JSON.stringify(message))
 }
-export const sendMessage = <T extends string | ArrayBufferLike | Blob | ArrayBufferView>(data: T) => {
-    ws.send(data)
-}
-export const sendMessageAndGetResult = async <T extends string | ArrayBufferLike | Blob | ArrayBufferView>(data: T) => {
-    ws.send(data)
+export const sendRpcMessage = <T extends RpcMessage>(message: T) => {
+    ws.send(JSON.stringify(message))
+    return new Promise((resolve, reject) => {
+        // 收到消息时，将Promise解决并传递接收到的消息
+        const rpcHandler = (event: MessageEvent<RpcMessage>) => {
+            if (message.id == event.data.id) {
+                ws.removeEventListener("message", rpcHandler)
+                resolve(event.data)
+            }
+        }
+        ws.addEventListener("message", rpcHandler)
+        ws.onerror = (error) => {
+            reject(error)
+        }
+        // 避免内存泄漏
+        ws.onclose = () => {
+            ws.removeEventListener("message", rpcHandler)
+        }
+    })
 }
