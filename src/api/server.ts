@@ -1,2 +1,3 @@
-export const server = "https://mo.qyinvoling.tech"
-export const webSocketServer = "wss://wss.mo.qyinvoling.tech"
+const host = "mo.qyinvoling.tech"
+export const server = `https://${host}`
+export const webSocketServer = `wss://${host}`

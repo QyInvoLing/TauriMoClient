@@ -1,7 +1,7 @@
 <template>
     <a-tabs :animation="true" v-model:active-key="currentTabIndex" class="lobby-tabs">
         <template #extra>
-            <a-button @click="exitLobby">退出大厅</a-button>
+            <a-button @click="manuallyLeaveLobby">退出大厅</a-button>
         </template>
         <a-tab-pane key="1" title="大厅">
             <a-layout class="lobby-container">
@@ -20,13 +20,13 @@
                 </a-layout-footer>
             </a-layout>
         </a-tab-pane>
-        <a-tab-pane key="2" :disabled="!store.isInRoom" title="房间">
+        <a-tab-pane key="2" :disabled="!lobbyStore.isInRoom" title="房间">
             <room @leave-room="backToLobby" />
         </a-tab-pane>
     </a-tabs>
 </template>
 <script setup lang="ts">
-import { ref, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import chat from "./components/chat.vue"
 import friends from "./components/friends.vue"
 import playerlist from "./components/playerlist.vue"
@@ -36,10 +36,12 @@ import { changeWindowSize } from "@/api/window"
 import { debounce } from "@/utils/utils"
 import { useLobbyStore } from '@/store/lobby'
 import { useAccountStore } from '@/store/account'
-import { onMounted } from 'vue'
+import { registerCallback,disconnect,unregisterCallback } from '@/api/websocket'
 import router from '@/router/router'
-import { appWindow } from "@tauri-apps/api/window";
-const store = useLobbyStore()
+import { appWindow } from "@tauri-apps/api/window"
+import { Message } from '@arco-design/web-vue'
+const accountStore = useAccountStore()
+const lobbyStore = useLobbyStore()
 const currentTabIndex = ref("1")
 //房间内点击退出房间，做完状态清理之后，让父组件切回大厅
 const backToLobby = () => {
@@ -48,20 +50,34 @@ const backToLobby = () => {
 const enterRoom = () => {
     currentTabIndex.value = "2"
 }
+//在右上角点击离开大厅，则不触发掉线提示。
+//先取消回调注册，然后断开连接并返回登录页面
+const manuallyLeaveLobby = ()=>{
+    unregisterCallback("close","leaveLobbyOnWebSocketClose")
+    disconnect()
+    leaveLobby()
+}
+//websocket断开时的回调
+const leaveLobbyOnWebSocketClose = ()=>{
+    Message.error({
+            content: '哎呀,掉线了'
+        })
+    leaveLobby()
+}
 //大厅内退出，返回到登录页面
-const exitLobby = async()=>{
+const leaveLobby = async () => {
     //清空窗口大小变化的事件监听器
     await sizeChangeListener.then((unlistenFunction) => unlistenFunction())
     //断开websocket连接
     //清空store内房间
-    store.isInRoom = false
-    store.roomlist = []
+    lobbyStore.isInRoom = false
+    lobbyStore.roomlist = []
     //清空store内账号
-    const authStore = useAccountStore()
-    authStore.username = ""
-    authStore.jwt = ""
+
+    accountStore.username = ""
+    accountStore.jwt = ""
     //回登录页
-    router.replace({name:"login"})
+    router.replace({ name: "login" })
 }
 //窗口大小变化时，存进缓存。下次进入大厅直接恢复
 const debouncedSizeChangeListener = debounce((size: any) => {
@@ -73,10 +89,13 @@ let sizeChangeListener = appWindow.onResized(({ payload: size }) => {
     debouncedSizeChangeListener(size)
 })
 onMounted(async () => {
-    changeWindowSize(localStorage.getItem("width"), localStorage.getItem("height"))
+    await changeWindowSize(localStorage.getItem("width"), localStorage.getItem("height"))
+    // 注册断开WebSocket连接的回调
+    registerCallback("close", "leaveLobbyOnWebSocketClose", leaveLobbyOnWebSocketClose)
+
 })
 onUnmounted(() => {
-    
+
 })
 </script>
 <style scoped>

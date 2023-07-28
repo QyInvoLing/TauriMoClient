@@ -11,13 +11,13 @@ import "./styles.css";
 import ArcoVue from '@arco-design/web-vue';
 import '@arco-design/web-vue/dist/arco.css';
 import router from '@/router/router';
-import { store } from '@/store/index'
+import { pinia } from '@/store/index'
 import App from './App.vue';
 
 
 const app = createApp(App)
 
 app.use(router)
-app.use(store)
+app.use(pinia)
 app.use(ArcoVue)
 app.mount("#app");
