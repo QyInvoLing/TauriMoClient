@@ -9,5 +9,7 @@
 
 import { postForm } from '@/api/request'
 export const login = async(username: string, password: string) => {
-    return await postForm("/login",{username,password})
+    const result = await postForm("/login",{username,password})
+    console.log("[INFO]登录结果：",result.data)
+    return result
 }

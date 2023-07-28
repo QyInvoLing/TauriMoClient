@@ -1,7 +1,7 @@
 <template>
     <a-tabs :animation="true" v-model:active-key="currentTabIndex" class="lobby-tabs">
         <template #extra>
-            <a-button>退出 没做好</a-button>
+            <a-button @click="exitLobby">退出大厅</a-button>
         </template>
         <a-tab-pane key="1" title="大厅">
             <a-layout class="lobby-container">
@@ -35,7 +35,9 @@ import room from "./components/room.vue"
 import { changeWindowSize } from "@/api/window"
 import { debounce } from "@/utils/utils"
 import { useLobbyStore } from '@/store/lobby'
+import { useAccountStore } from '@/store/account'
 import { onMounted } from 'vue'
+import router from '@/router/router'
 import { appWindow } from "@tauri-apps/api/window";
 const store = useLobbyStore()
 const currentTabIndex = ref("1")
@@ -45,6 +47,21 @@ const backToLobby = () => {
 }
 const enterRoom = () => {
     currentTabIndex.value = "2"
+}
+//大厅内退出，返回到登录页面
+const exitLobby = async()=>{
+    //清空窗口大小变化的事件监听器
+    await sizeChangeListener.then((unlistenFunction) => unlistenFunction())
+    //断开websocket连接
+    //清空store内房间
+    store.isInRoom = false
+    store.roomlist = []
+    //清空store内账号
+    const authStore = useAccountStore()
+    authStore.username = ""
+    authStore.jwt = ""
+    //回登录页
+    router.replace({name:"login"})
 }
 //窗口大小变化时，存进缓存。下次进入大厅直接恢复
 const debouncedSizeChangeListener = debounce((size: any) => {
@@ -59,7 +76,7 @@ onMounted(async () => {
     changeWindowSize(localStorage.getItem("width"), localStorage.getItem("height"))
 })
 onUnmounted(() => {
-    sizeChangeListener.then((unlistenFunction) => unlistenFunction())
+    
 })
 </script>
 <style scoped>
