@@ -36,7 +36,8 @@ import { changeWindowSize } from "@/api/window"
 import { debounce } from "@/utils/utils"
 import { useLobbyStore } from '@/store/lobby'
 import { useAccountStore } from '@/store/account'
-import { registerCallback,disconnect,unregisterCallback } from '@/api/websocket'
+import { registerCallback, disconnect, unregisterCallback } from '@/api/websocket'
+import { getPlayerList } from '@/api/websocket/player'
 import router from '@/router/router'
 import { appWindow } from "@tauri-apps/api/window"
 import { Message } from '@arco-design/web-vue'
@@ -52,16 +53,16 @@ const enterRoom = () => {
 }
 //在右上角点击离开大厅，则不触发掉线提示。
 //先取消回调注册，然后断开连接并返回登录页面
-const manuallyLeaveLobby = ()=>{
-    unregisterCallback("close","leaveLobbyOnWebSocketClose")
+const manuallyLeaveLobby = () => {
+    unregisterCallback("close", "leaveLobbyOnWebSocketClose")
     disconnect()
     leaveLobby()
 }
 //websocket断开时的回调
-const leaveLobbyOnWebSocketClose = ()=>{
+const leaveLobbyOnWebSocketClose = () => {
     Message.error({
-            content: '哎呀,掉线了'
-        })
+        content: '哎呀,掉线了'
+    })
     leaveLobby()
 }
 //大厅内退出，返回到登录页面
@@ -69,11 +70,11 @@ const leaveLobby = async () => {
     //清空窗口大小变化的事件监听器
     await sizeChangeListener.then((unlistenFunction) => unlistenFunction())
     //断开websocket连接
-    //清空store内房间
+    //清空store内房间和玩家
+    lobbyStore.players = []
     lobbyStore.isInRoom = false
     lobbyStore.roomlist = []
     //清空store内账号
-
     accountStore.username = ""
     accountStore.jwt = ""
     //回登录页
@@ -92,6 +93,11 @@ onMounted(async () => {
     await changeWindowSize(localStorage.getItem("width"), localStorage.getItem("height"))
     // 注册断开WebSocket连接的回调
     registerCallback("close", "leaveLobbyOnWebSocketClose", leaveLobbyOnWebSocketClose)
+
+    //玩家列表
+    let { players } = await getPlayerList()
+    lobbyStore.players.push(...players)
+    console.log("[INFO]初始玩家列表：", players)
 
 })
 onUnmounted(() => {

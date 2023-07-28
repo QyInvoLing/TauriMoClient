@@ -58,6 +58,7 @@ import router from '@/router/router'
 import { login } from './api'
 import { changeWindowSize, setResizeable } from '@/api/window'
 import { connect } from '@/api/websocket'
+
 const accountStore = useAccountStore()
 const userInfo = ref({ username: "", password: "" })
 const loading = ref(false)
@@ -72,16 +73,17 @@ const handleSubmit = async () => {
         return
     }
     loading.value = true
-    //来不及写，以后再说，先anyscript
+    //来不及写，以后再说，先用anyscript写一大堆登录&初始化逻辑
     try {
         let loginResponse = await login(userInfo.value.username, userInfo.value.password) as unknown as Record<string, any>
-        loading.value = false
+
         if (loginResponse.data.result == "success") {
             localStorage.setItem("username", userInfo.value.username)
             localStorage.setItem("password", userInfo.value.password)
             accountStore.jwt = loginResponse.data.jwt
             accountStore.username = userInfo.value.username
-            connect(accountStore.jwt)
+            await connect(accountStore.jwt)
+            loading.value = false
             Message.success({
                 content: '登录成功'
             })
@@ -93,6 +95,7 @@ const handleSubmit = async () => {
         }
     } catch (e) {
         loading.value = false
+        console.error(e)
         Message.error({
             content: '登录失败:无法连接到服务器'
         })

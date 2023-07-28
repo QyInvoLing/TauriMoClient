@@ -17,6 +17,8 @@ declare module 'vue' {
     ALayoutFooter: typeof import('@arco-design/web-vue')['LayoutFooter']
     ALayoutHeader: typeof import('@arco-design/web-vue')['LayoutHeader']
     ALayoutSider: typeof import('@arco-design/web-vue')['LayoutSider']
+    AList: typeof import('@arco-design/web-vue')['List']
+    AListItem: typeof import('@arco-design/web-vue')['ListItem']
     ASpace: typeof import('@arco-design/web-vue')['Space']
     ASpin: typeof import('@arco-design/web-vue')['Spin']
     ATable: typeof import('@arco-design/web-vue')['Table']

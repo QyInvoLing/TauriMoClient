@@ -10,6 +10,7 @@ interface Room {//type不应该在这里被定义，以后再改，先实现功�
 export const useLobbyStore = defineStore('lobby', () => {
     const roomlist = ref<Room[]>([])
     const isInRoom = ref(false)
+    const players = ref<string[]>([])
     const currentRoom = ref<Room>({
         key: -2,
         roomname: 'test',
@@ -27,5 +28,5 @@ export const useLobbyStore = defineStore('lobby', () => {
             players: ["player0", "player1"],
         })
     }
-    return { roomlist, isInRoom, currentRoom }
+    return { players,roomlist, isInRoom, currentRoom }
 })
