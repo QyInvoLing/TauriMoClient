@@ -1,7 +1,9 @@
 <template>
     <div class="lobby-chat-container">
         <a-popover title="大厅聊天" trigger="click">
-            <div class="lobby-chat-preview">{{ lastMessage.username }}:{{ lastMessage.message }}</div>
+            <a-typography-paragraph class="lobby-chat-preview">
+                {{ lastMessage.username }}:{{ lastMessage.message }}
+            </a-typography-paragraph> 
             <template #content>
                 <a-empty v-if="messages.length == 0">暂无消息</a-empty>
                 <p v-for="message in messages">{{ message.username }}:{{ message.message }}</p>

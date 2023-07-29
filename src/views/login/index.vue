@@ -10,7 +10,7 @@
     <div class="login-form-wrapper">
         <!-- <div class="login-form-title">{{ "登录" }}</div> -->
         <a-spin :size="32" tip="Soooooon!" :loading="loading">
-            <a-form ref="loginForm" :model="userInfo" class="login-form" @submit="handleSubmit">
+            <a-form :model="userInfo" class="login-form" @submit="handleSubmit">
                 <a-form-item field="username" label="用户名" :rules="usernameRule" :validate-trigger="['change', 'blur']"
                     hide-label>
                     <a-input :placeholder="'用户名'" v-model="userInfo.username">
@@ -38,7 +38,7 @@
                     <a-button type="primary" html-type="submit" long>
                         登录
                     </a-button>
-                    <a-button type="text" @click="clickRegisterButton" long class="login-form-register-btn">
+                    <a-button type="text" @click="redirectToRegisterPage" long class="login-form-register-btn">
                         注册
                     </a-button>
                 </a-space>
@@ -50,7 +50,7 @@
 <script lang="ts" setup>
 import { IconUser, IconLock } from '@arco-design/web-vue/es/icon';
 import { ref, onMounted } from 'vue'
-import { invoke } from '@tauri-apps/api'
+// import { invoke } from '@tauri-apps/api'
 import { Message } from '@arco-design/web-vue'
 import { useAccountStore } from '@/store/account'
 import { sleep } from '@/utils/utils'
@@ -58,7 +58,7 @@ import router from '@/router/router'
 import { login } from './api'
 import { changeWindowSize, setResizeable } from '@/api/window'
 import { connect } from '@/api/websocket'
-
+import { usernameRegex, usernameRule, passwordRule } from '@/api/loginAndRegister'
 const accountStore = useAccountStore()
 const userInfo = ref({ username: "", password: "" })
 const loading = ref(false)
@@ -101,9 +101,6 @@ const handleSubmit = async () => {
         })
         return
     }
-
-
-
 }
 const redirectToLobby = async () => {
     //允许界面自由拉伸，然后进入大厅
@@ -111,21 +108,17 @@ const redirectToLobby = async () => {
     await sleep(1000)
     router.replace({ name: 'lobby' })
 }
-const clickRegisterButton = () => {
-    invoke('greet', { name: 'World' })
-        // `invoke` 返回的是一个 Promise
-        .then((response) => console.log(response))
+const redirectToRegisterPage = async () => {
+    router.replace({ name: 'register' })
 }
-const usernameRegex = /^[A-Za-z0-9_]+$/
+// const clickRegisterButton = () => {
+//     invoke('greet', { name: 'World' })
+//         // `invoke` 返回的是一个 Promise
+//         .then((response) => console.log(response))
+// }
 
-//对用户名和密码的限制
-const usernameRule = [{ required: true, message: '请输入用户名' },
-{ match: usernameRegex, message: "用户名只能由字母、数字、下划线组成" },
-{ minLength: 5, message: '用户名长度至少为5个字符' },
-{ maxLength: 16, message: '用户名长度至多为16个字符' }]
-const passwordRule = [{ required: true, message: '请输入密码' },
-{ minLength: 8, message: '密码长度至少为8个字符' },
-{ maxLength: 16, message: '密码长度至多为16个字符' }]
+
+
 
 onMounted(() => {
     console.log("[INFO]登录页面挂载.")

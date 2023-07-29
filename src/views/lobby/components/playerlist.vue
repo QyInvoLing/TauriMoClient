@@ -2,7 +2,7 @@
     <div class="playerlist-container">
         <a-list :max-height="'100%'" :scroll="scrollbarOptions" :scrollbar="true">
             <template #header>
-                在线用户
+                <a-statistic title="在线用户" :value="lobbyStore.players.length" show-group-separator />
             </template>
             <a-list-item v-for="player in lobbyStore.players">{{ player }}</a-list-item>
         </a-list>
