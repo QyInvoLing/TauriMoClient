@@ -28,13 +28,13 @@
                         </template>
                     </a-input-password>
                 </a-form-item>
+
                 <a-space :size="16" direction="vertical">
-                    <!-- <div class="login-form-password-actions">
-                        <a-checkbox checked="rememberPassword">
-                            记住密码
-                        </a-checkbox>
-                        <a-link></a-link>
-                    </div> -->
+                    <a-input :placeholder="'服务器'" v-model="loginHost" @change="hostInputChange">
+                        <template #prefix>
+                            <icon-public />
+                        </template>
+                    </a-input>
                     <a-button type="primary" html-type="submit" long>
                         登录
                     </a-button>
@@ -56,12 +56,17 @@ import { useAccountStore } from '@/store/account'
 import { sleep } from '@/utils/utils'
 import router from '@/router/router'
 import { login } from './api'
+import { host, temporallyChangeHost, saveHost } from '@/api/server'
 import { changeWindowSize, setResizeable } from '@/api/window'
 import { connect } from '@/api/websocket'
 import { usernameRegex, usernameRule, passwordRule } from '@/api/loginAndRegister'
 const accountStore = useAccountStore()
 const userInfo = ref({ username: "", password: "" })
 const loading = ref(false)
+const loginHost = ref(host)
+const hostInputChange = () => {//更新@/api/server.ts中的服务器
+    temporallyChangeHost(loginHost.value)
+}
 const handleSubmit = async () => {
     //校验表单是否合法
     if (userInfo.value.password.length < 8 || userInfo.value.password.length > 16
@@ -87,6 +92,7 @@ const handleSubmit = async () => {
             Message.success({
                 content: '登录成功'
             })
+            saveHost(loginHost.value)//登录成功，说明这个服务器是可以用的
             await redirectToLobby()
         } else {
             Message.error({

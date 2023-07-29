@@ -10,9 +10,7 @@ let ws: WebSocket
 //初始化连接
 export const connect = (jwt: string) => {
     ws = new WebSocket(webSocketServer + "/ws")
-
-
-
+    console.log(`[INFO]试图与${webSocketServer}建立WebSocket连接...`)
     return new Promise((resolve, reject) => {
         const ping = () => { sendMessage("ping") }
         const pingTimer = setInterval(ping, 3000)
