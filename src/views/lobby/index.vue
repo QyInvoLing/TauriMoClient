@@ -1,9 +1,9 @@
 <template>
-    <a-tabs class="lobby-tabs" :animation="true" v-model:active-key="currentTabIndex" >
+    <a-tabs class="lobby-tabs" :animation="true" v-model:active-key="currentTabIndex">
         <template #extra>
             <a-button @click="manuallyLeaveLobby">退出大厅</a-button>
         </template>
-        <a-tab-pane  key="1" title="大厅">
+        <a-tab-pane key="1" title="大厅">
             <a-layout class="lobby-container">
                 <a-layout-header>大厅</a-layout-header>
                 <a-layout>
@@ -83,8 +83,10 @@ const leaveLobby = async () => {
 //窗口大小变化时，存进缓存。下次进入大厅直接恢复
 const debouncedSizeChangeListener = debounce((size: any) => {
     console.log("窗口大小变化：", size)
-    localStorage.setItem("width", size.width)
-    localStorage.setItem("height", size.height)
+    if (size.width>=400&&size.height>=500) {//有个暂时无法稳定复现的bug会设置成全0，临时这样写，拦截它
+        localStorage.setItem("width", size.width)
+        localStorage.setItem("height", size.height)
+    }
 }, 300)
 let sizeChangeListener = appWindow.onResized(({ payload: size }) => {
     debouncedSizeChangeListener(size)
@@ -113,5 +115,5 @@ onUnmounted(() => {
 .lobby-container {
     width: 100%;
     height: 85vh;
-} 
+}
 </style>@/api/websocket/websocket
