@@ -1,32 +1,25 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-interface Room {//type不应该在这里被定义，以后再改，先实现功能
-    key: number,
-    roomname: string,
-    map: string,
-    mode: string,
-    players: string[],
-}
+import { Room } from "@/api/websocket/room"
 export const useLobbyStore = defineStore('lobby', () => {
     const roomlist = ref<Room[]>([])
     const isInRoom = ref(false)
     const players = ref<string[]>([])
-    const currentRoom = ref<Room>({
-        key: -2,
-        roomname: 'test',
-        map: '作用反作用',
-        mode: '普通作战',
-        players: ["player0", "player1"],
-    })
+    const currentRoom = ref<Room>()
     //测试用逻辑
     for (let i = 0; i < 50; i++) {
         roomlist.value.push({
             key: i,
-            roomname: 'test',
-            map: '作用反作用',
-            mode: '普通作战',
-            players: ["player0", "player1"],
+            private: true,
+            name: 'test',
+            players: [{ username: "test", color: 0, team: 0, location: 0 }],
+            settings: {
+                map: '作用反作用',
+                mode: '普通作战',
+                credits: 5000,
+                techlevel: 10
+            }
         })
     }
-    return { players,roomlist, isInRoom, currentRoom }
+    return { players, roomlist, isInRoom, currentRoom }
 })

@@ -1,6 +1,12 @@
 <template>
     <a-tabs class="lobby-tabs" :animation="true" v-model:active-key="currentTabIndex">
         <template #extra>
+            <a-popover title="创建房间" trigger="click">
+                <a-button @click="openRoomCreateMenu">创建房间</a-button>
+                <template #content>
+                    <roomcreatemenu />
+                </template>
+            </a-popover>
             <a-button @click="manuallyLeaveLobby">退出大厅</a-button>
         </template>
         <a-tab-pane key="1" title="大厅">
@@ -27,6 +33,7 @@
 </template>
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
+import roomcreatemenu from './components/roomcreatemenu.vue'
 import chat from "./components/chat.vue"
 import friends from "./components/friends.vue"
 import playerlist from "./components/playerlist.vue"
@@ -50,6 +57,10 @@ const backToLobby = () => {
 }
 const enterRoom = () => {
     currentTabIndex.value = "2"
+}
+//点击创建房间按钮
+const openRoomCreateMenu = () => {
+
 }
 //在右上角点击离开大厅，则不触发掉线提示。
 //先取消回调注册，然后断开连接并返回登录页面
@@ -83,7 +94,7 @@ const leaveLobby = async () => {
 //窗口大小变化时，存进缓存。下次进入大厅直接恢复
 const debouncedSizeChangeListener = debounce((size: any) => {
     console.log("窗口大小变化：", size)
-    if (size.width>=400&&size.height>=500) {//有个暂时无法稳定复现的bug会设置成全0，临时这样写，拦截它
+    if (size.width >= 400 && size.height >= 500) {//有个暂时无法稳定复现的bug会设置成全0，临时这样写，拦截它
         localStorage.setItem("width", size.width)
         localStorage.setItem("height", size.height)
     }
@@ -93,11 +104,12 @@ let sizeChangeListener = appWindow.onResized(({ payload: size }) => {
 })
 onMounted(async () => {
     await changeWindowSize(localStorage.getItem("width"), localStorage.getItem("height"))
-    // 注册断开WebSocket连接的回调
+    // 注册 断开WebSocket连接时返回登录页面 的回调
     registerCallback("close", "leaveLobbyOnWebSocketClose", leaveLobbyOnWebSocketClose)
 
-    //玩家列表
+    //获取初始玩家列表
     let { players } = await getPlayerList()
+    lobbyStore.players = []
     lobbyStore.players.push(...players)
     console.log("[INFO]初始玩家列表：", players)
 

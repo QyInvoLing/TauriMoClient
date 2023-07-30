@@ -1,6 +1,6 @@
 <template>
     <div class="roomlist-container">
-        <a-table :columns="columns" :pagination="false" :data="lobbyStore.roomlist" :scroll="{ y: '100%' }"
+        <a-table :columns="columns" :pagination="false" :data="roomsForDisplay" :scroll="{ y: '100%' }"
             :scrollbar="true" @row-click="handleRowClick">
             <template #players="{ record }">
                 <!-- 这里的record应该指的是data数组内的对象 -->
@@ -12,36 +12,52 @@
     </div>
 </template>
 <script setup lang="ts">
+import { onMounted, onUnmounted,computed } from 'vue'
+import { registerCallback, unregisterCallback } from '@/api/websocket'
+import { getRoomList, Room } from '@/api/websocket/room'
 import { useLobbyStore } from '@/store/lobby'
 const emit = defineEmits(["enterRoom"])
 const lobbyStore = useLobbyStore()
 const columns = [
     {
         title: '房间名',
-        dataIndex: 'roomname',
+        dataIndex: 'name',
         ellipsis: true,
         tooltip: true,
         width: 100
     },
     {
-        title: '地图',
-        dataIndex: 'map',
-        width: 100
-    },
-    {
-        title: '模式',
-        dataIndex: 'mode',
-        ellipsis: true,
-        width: 100,
-    },
-
-    {
-        title: "人数",
-        slotName: "players",
-        width: 50,
+        title: '信息',
+        children: [{
+            title: '模式',
+            dataIndex: 'mode',
+            ellipsis: true,
+            width: 100,
+        }, {
+            title: '地图',
+            dataIndex: 'map',
+            width: 100
+        },
+        {
+            title: '金钱',
+            dataIndex: 'credits',
+            ellipsis: true,
+            width: 100,
+        }]
     }
+    // ,
+    // {
+    //     title: "人数",
+    //     slotName: "players",
+    //     width: 50,
+    // }
 
 ]
+const roomsForDisplay = computed(()=>{
+    return lobbyStore.roomlist.map(room=>{ 
+        return { ...room.settings,...room}
+    })
+})
 let roomIdCache: number = -1
 let enterRoomTimer: number = -1
 const handleRowClick = (room: any) => {
@@ -68,6 +84,25 @@ const enterRoom = (room: any) => {
     lobbyStore.isInRoom = true
     emit("enterRoom")
 }
+onMounted(async () => {
+    //获取初始玩家列表
+    let { rooms } = await getRoomList()
+    lobbyStore.roomlist = []
+    lobbyStore.roomlist.push(...rooms)
+    console.log("[INFO]初始房间列表：", rooms)
+    registerCallback("roomCreated", "roomCreated", (data: { room: Room }) => {
+        console.log(`[INFO]新的房间：`, data.room)
+        lobbyStore.roomlist.push(data.room)
+    })
+    registerCallback("roomDestroyed", "roomDestroyed", (data: { room: Room }) => {
+        console.log(`[INFO]房间${data.room}销毁.`)
+        lobbyStore.roomlist.splice((lobbyStore.roomlist.indexOf(data.room)), 1)
+    })
+})
+onUnmounted(() => {
+    unregisterCallback("roomCreated", "roomCreated")
+    unregisterCallback("roomDestroyed", "roomDestroyed")
+})
 </script>
 <style scoped>
 .roomlist-container {

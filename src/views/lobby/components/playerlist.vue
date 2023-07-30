@@ -12,11 +12,17 @@
 import { onMounted, onUnmounted } from 'vue'
 import { registerCallback, unregisterCallback } from '@/api/websocket';
 import { useLobbyStore } from '@/store/lobby'
+import { getPlayerList } from '@/api/websocket/player'
 const lobbyStore = useLobbyStore()
 const scrollbarOptions = {
     y: "100%"
 }
-onMounted(() => {
+onMounted(async() => {
+    //获取初始玩家列表
+    let { players } = await getPlayerList()
+    lobbyStore.players = []
+    lobbyStore.players.push(...players)
+    console.log("[INFO]初始玩家列表：", players)
     registerCallback("playerLogin", "playerLogin", (message: { username: string }) => {
         console.log(`[INFO]用户${message.username}登录.`)
         lobbyStore.players.push(message.username)
