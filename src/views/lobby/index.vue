@@ -44,7 +44,7 @@ import { debounce } from "@/utils/utils"
 import { useLobbyStore } from '@/store/lobby'
 import { useAccountStore } from '@/store/account'
 import { registerCallback, disconnect, unregisterCallback } from '@/api/websocket'
-import { getPlayerList } from '@/api/websocket/player'
+
 import router from '@/router/router'
 import { appWindow } from "@tauri-apps/api/window"
 import { Message } from '@arco-design/web-vue'
@@ -107,11 +107,7 @@ onMounted(async () => {
     // 注册 断开WebSocket连接时返回登录页面 的回调
     registerCallback("close", "leaveLobbyOnWebSocketClose", leaveLobbyOnWebSocketClose)
 
-    //获取初始玩家列表
-    let { players } = await getPlayerList()
-    lobbyStore.players = []
-    lobbyStore.players.push(...players)
-    console.log("[INFO]初始玩家列表：", players)
+    
 
 })
 onUnmounted(() => {
