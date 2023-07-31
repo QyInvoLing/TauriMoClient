@@ -23,6 +23,7 @@ declare module 'vue' {
     AList: typeof import('@arco-design/web-vue')['List']
     AListItem: typeof import('@arco-design/web-vue')['ListItem']
     AModal: typeof import('@arco-design/web-vue')['Modal']
+    APageHeader: typeof import('@arco-design/web-vue')['PageHeader']
     APopover: typeof import('@arco-design/web-vue')['Popover']
     ASpace: typeof import('@arco-design/web-vue')['Space']
     ASpin: typeof import('@arco-design/web-vue')['Spin']

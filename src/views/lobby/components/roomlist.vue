@@ -4,7 +4,7 @@
         <a-input-password class="room-entry-modal__passowrd-input" placeholder="房间密码" v-model="roomPassword" allow-clear />
     </a-modal>
     <div class="roomlist-container">
-        <a-table column-resizable :columns="columns" :pagination="false" :data="roomsForDisplay" :scroll="{ y: '100%' }"
+        <a-table column-resizable :columns="columns" :pagination="false" :data="(roomsForDisplay as unknown as any)" :scroll="{ y: '100%' }"
             :scrollbar="true" @row-click="handleRowClick">
             <template #players="{ record }">
                 <!-- 这里的record应该指的是data数组内的对象 -->
@@ -68,7 +68,8 @@ const roomsForDisplay = computed(() => {
 //双击判断逻辑
 let roomIdTimerCache: number = -1
 let enterRoomTimer: number = -1
-const handleRowClick = (room: Room) => {
+const handleRowClick = (tableRow: any) => {
+    let room = tableRow as Room//Arco的table对类型有严格要求，暂时没时间好好搞
     if (!lobbyStore.isInRoom) {//不在房间里才行
         //不管怎么样都要重置定时器
         clearTimeout(enterRoomTimer)
