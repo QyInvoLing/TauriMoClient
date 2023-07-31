@@ -1,6 +1,6 @@
 <template>
     <a-space direction="vertical" class="room-create-menu-slot-container">
-        <a-input placeholder="房间名" v-model="roomName" :max-length="10" allow-clear show-word-limit />
+        <a-input placeholder="房间名" v-model="roomName" :max-length="20" allow-clear show-word-limit />
         <a-input-password placeholder="房间密码" v-model="roomPassword" allow-clear />
         <a-button type="primary" :loading="loading" @click="clickCreateRoomButton" long>
             创建
