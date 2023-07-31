@@ -19,7 +19,7 @@ enum TechLevel {
     T4 = 4, T5 = 5, T6 = 6, T7 = 7, T8 = 8, T9 = 9, T10 = 10
 }
 enum Color {//这不是我猜的，以后可能要改成从文件里读取
-    Teal = 0, Red = 1, Aqua = 2, Lime = 3, Purple = 4, Yellow = 5, Blue = 6, Orange = 7, Magenta = 8, Brown = 9, Green = 10, Crimson = 11, Sky = 12
+    Random=-1,Teal = 0, Red = 1, Aqua = 2, Lime = 3, Purple = 4, Yellow = 5, Blue = 6, Orange = 7, Magenta = 8, Brown = 9, Green = 10, Crimson = 11, Sky = 12
 }
 enum TeamOption {//1234代表ABCD，0代表无。我猜的，以后还可能改
     NoTeam = 0, A = 1, B = 2, C = 3, D = 4
@@ -51,13 +51,13 @@ interface enterRoomRequest {
     password: string
 }
 export const enterRoom = async (request: enterRoomRequest) => {
-    return await sendRpcMessage("enterRoom", request)
+    return await sendRpcMessage("enterRoom", request) as { result: "success" | "error", message?: "wrong_password" | "room_not_exist" }
 }
 interface leaveRoomRequest {
     key: number,
 }
 export const leaveRoom = async (request: leaveRoomRequest) => {
-    return await sendRpcMessage("leaveRoom", request)
+    return await sendRpcMessage("leaveRoom", request) as { result: string }
 }
 
 

@@ -1,17 +1,17 @@
 <template>
     <a-tabs class="lobby-tabs" :animation="true" v-model:active-key="currentTabIndex">
         <template #extra>
-            <a-popover title="创建房间" trigger="click">
-                <a-button @click="openRoomCreateMenu">创建房间</a-button>
+            <a-popover position="br" v-model:popup-visible="isRoomCreateMenuOpen" title="创建房间" trigger="click">
+                <a-button v-show="!lobbyStore.isInRoom">创建房间</a-button>
                 <template #content>
-                    <roomcreatemenu />
+                    <roomcreatemenu @enter-room="enterRoom" />
                 </template>
             </a-popover>
             <a-button @click="manuallyLeaveLobby">退出大厅</a-button>
         </template>
         <a-tab-pane key="1" title="大厅">
             <a-layout class="lobby-container">
-                <a-layout-header>大厅</a-layout-header>
+                <a-layout-header></a-layout-header>
                 <a-layout>
                     <a-layout-content>
                         <roomlist @enter-room="enterRoom" />
@@ -51,17 +51,19 @@ import { Message } from '@arco-design/web-vue'
 const accountStore = useAccountStore()
 const lobbyStore = useLobbyStore()
 const currentTabIndex = ref("1")
+
 //房间内点击退出房间，做完状态清理之后，让父组件切回大厅
 const backToLobby = () => {
     currentTabIndex.value = "1"
 }
-const enterRoom = () => {
+const isRoomCreateMenuOpen = ref(false)
+const enterRoom = (key: number) => {
+    isRoomCreateMenuOpen.value=false//进房间之后，自动关闭创建房间菜单
+    lobbyStore.isInRoom = true
+    lobbyStore.currentRoom = lobbyStore.roomlist.filter(room => room.key == key)[0]
     currentTabIndex.value = "2"
 }
-//点击创建房间按钮
-const openRoomCreateMenu = () => {
-
-}
+ 
 //在右上角点击离开大厅，则不触发掉线提示。
 //先取消回调注册，然后断开连接并返回登录页面
 const manuallyLeaveLobby = () => {
@@ -106,9 +108,6 @@ onMounted(async () => {
     await changeWindowSize(localStorage.getItem("width"), localStorage.getItem("height"))
     // 注册 断开WebSocket连接时返回登录页面 的回调
     registerCallback("close", "leaveLobbyOnWebSocketClose", leaveLobbyOnWebSocketClose)
-
-    
-
 })
 onUnmounted(() => {
     unregisterCallback("close", "leaveLobbyOnWebSocketClose")

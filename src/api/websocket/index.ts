@@ -14,6 +14,14 @@ export const connect = (jwt: string) => {
     return new Promise((resolve, reject) => {
         const ping = () => { sendMessage("ping") }
         const pingTimer = setInterval(ping, 3000)
+        ws.onclose = () => {//注册断开回调，以便于在连接断开时进行处理
+            executeCallbacks("close")
+            for (let i = 0; i < callbacks["close"].length; i++) {
+                unregisterCallback("close",callbacks["close"][i].name)
+            }
+            clearInterval(pingTimer)
+            reject()
+        }
         ws.onopen = () => {// 连接建立后
             console.log("[INFO]WebSocket连接建立成功，开始鉴权.")
             /**
@@ -33,11 +41,7 @@ export const connect = (jwt: string) => {
 
             resolve(null)
         }
-        ws.onclose = () => {//注册断开回调，以便于在连接断开时进行处理
-            executeCallbacks("close")
-            clearInterval(pingTimer)
-            reject()
-        }
+        
     })
 }
 export const disconnect = () => {

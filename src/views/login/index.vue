@@ -53,7 +53,7 @@ import { ref, onMounted } from 'vue'
 // import { invoke } from '@tauri-apps/api'
 import { Message } from '@arco-design/web-vue'
 import { useAccountStore } from '@/store/account'
-import { sleep } from '@/utils/utils'
+//import { sleep } from '@/utils/utils'
 import router from '@/router/router'
 import { login } from './api'
 import { host, temporallyChangeHost, saveHost } from '@/api/server'
@@ -111,7 +111,7 @@ const handleSubmit = async () => {
 const redirectToLobby = async () => {
     //允许界面自由拉伸，然后进入大厅
     setResizeable(true)
-    await sleep(1000)
+    // await sleep(1000)
     router.replace({ name: 'lobby' })
 }
 const redirectToRegisterPage = async () => {
