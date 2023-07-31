@@ -14,7 +14,7 @@
                 <a-layout-header></a-layout-header>
                 <a-layout>
                     <a-layout-content>
-                        <roomlist @enter-room="enterRoom" />
+                        <roomlist @enter-room="enterRoom" @leave-room="backToLobby"/>
                     </a-layout-content>
                     <a-layout-sider>
                         <friends />
@@ -52,8 +52,10 @@ const accountStore = useAccountStore()
 const lobbyStore = useLobbyStore()
 const currentTabIndex = ref("1")
 
-//房间内点击退出房间，做完状态清理之后，让父组件切回大厅
+//房间内点击退出房间，让父组件切回大厅
 const backToLobby = () => {
+    //清理状态
+    lobbyStore.isInRoom = false
     currentTabIndex.value = "1"
 }
 const isRoomCreateMenuOpen = ref(false)
@@ -93,7 +95,7 @@ const leaveLobby = async () => {
     //回登录页
     router.replace({ name: "login" })
 }
-//窗口大小变化时，存进缓存。下次进入大厅直接恢复
+//窗口大小变化时，存进缓存。下次进入大厅直接恢复leaveRoom
 const debouncedSizeChangeListener = debounce((size: any) => {
     console.log("窗口大小变化：", size)
     if (size.width >= 400 && size.height >= 500) {//有个暂时无法稳定复现的bug会设置成全0，临时这样写，拦截它

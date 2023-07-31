@@ -22,7 +22,8 @@ import { getRoomList, Room, enterRoom } from '@/api/websocket/room'
 import { useLobbyStore } from '@/store/lobby'
 import { Message } from '@arco-design/web-vue'
 const emit = defineEmits<{
-    (e: "enterRoom", roomKey: number): void
+    (e: "enterRoom", roomKey: number): void,
+    (e: "leaveRoom"): void
 }>()
 const lobbyStore = useLobbyStore()
 const columns = [
@@ -89,7 +90,7 @@ const roomPassword = ref("")
 const confirmButtonLoading = ref(false)
 const openPasswordInputModal = () => {
     isJoinRoomModalOpen.value = true
-}
+} 
 let roomIdCache: number = -1//这里不能用roomIdTimerCache，因为打开输密码面板后一秒它会被重置
 const tryEnterRoom = async (room: Room) => {
     console.log("[INFO]在房间列表组件内试图进入房间", room.key)
@@ -139,6 +140,14 @@ onMounted(async () => {
     //收到房间销毁消息时的回调
     registerCallback("roomDestroyed", "roomDestroyed", (data: { room: Room }) => {
         console.log(`[INFO]房间${data.room}销毁.`)
+        //如果这个房间是自己现在的房间，就设置客户端的房间状态
+        if(data.room.key === lobbyStore.currentRoom?.key){
+            emit("leaveRoom")
+            Message.info({
+                content: '房主销毁了房间'
+            })
+        }
+        
         //一定要对比key才行，之前这里直接用indexOf出错了，我是傻逼
         for (let i = 0; i < lobbyStore.roomlist.length; i++) {
             if (lobbyStore.roomlist[i].key == data.room.key) {

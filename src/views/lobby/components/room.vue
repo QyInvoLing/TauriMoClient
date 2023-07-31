@@ -20,8 +20,6 @@ const clickLeaveRoomButton = async () => {
     //发送请求
     let leaveResult = await leaveRoom({ key: lobbyStore.currentRoom.key })
     if (leaveResult.result == "success") {
-        //清理状态
-        lobbyStore.isInRoom = false
         //回到大厅标签页
         Message.success({
             content: '离开房间成功'
