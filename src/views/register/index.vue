@@ -37,7 +37,7 @@ import { ref } from 'vue'
 import { Message } from '@arco-design/web-vue'
 import { usernameRegex, usernameRule, passwordRule } from '@/api/loginAndRegister'
 import { sleep } from "@/utils/utils"
-import { register } from './api'
+import { register } from '@/api/loginAndRegister'
 const loading = ref(false)
 const userInfo = ref({ username: "", password: "" })
 const backToLogin = () => {

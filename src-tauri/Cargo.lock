@@ -2934,7 +2934,7 @@ dependencies = [
 
 [[package]]
 name = "tauri-mo-client"
-version = "0.0.0"
+version = "0.0.4"
 dependencies = [
  "serde",
  "serde_json",

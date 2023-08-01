@@ -60,8 +60,7 @@ export const leaveRoom = async (request: leaveRoomRequest) => {
     return await sendRpcMessage("leaveRoom", request) as { result: string }
 }
 
-
 //获取房间列表
 export const getRoomList = async () => {
-    return await sendRpcMessage("getRoomList") as { result: string, rooms: Room[] }
+    return await sendRpcMessage("getRoomList") as { result: string, rooms: Record<number,Room> }
 }

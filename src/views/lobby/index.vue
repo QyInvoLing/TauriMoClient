@@ -14,7 +14,7 @@
                 <a-layout-header></a-layout-header>
                 <a-layout>
                     <a-layout-content>
-                        <roomlist @enter-room="enterRoom" @leave-room="backToLobby"/>
+                        <roomlist @enter-room="enterRoom" @leave-room="backToLobby" />
                     </a-layout-content>
                     <a-layout-sider>
                         <friends />
@@ -47,7 +47,7 @@ import { registerCallback, disconnect, unregisterCallback } from '@/api/websocke
 
 import router from '@/router/router'
 import { appWindow } from "@tauri-apps/api/window"
-import { Message } from '@arco-design/web-vue'
+import { Message } from '@arco-design/web-vue' 
 const accountStore = useAccountStore()
 const lobbyStore = useLobbyStore()
 const currentTabIndex = ref("1")
@@ -60,12 +60,14 @@ const backToLobby = () => {
 }
 const isRoomCreateMenuOpen = ref(false)
 const enterRoom = (key: number) => {
-    isRoomCreateMenuOpen.value=false//进房间之后，自动关闭创建房间菜单
+    isRoomCreateMenuOpen.value = false//进房间之后，自动关闭创建房间菜单
     lobbyStore.isInRoom = true
-    lobbyStore.currentRoom = lobbyStore.roomlist.filter(room => room.key == key)[0]
+    let room = lobbyStore.rooms.get(key)
+    if (room == undefined) { return }
+    lobbyStore.currentRoom = room
     currentTabIndex.value = "2"
 }
- 
+
 //在右上角点击离开大厅，则不触发掉线提示。
 //先取消回调注册，然后断开连接并返回登录页面
 const manuallyLeaveLobby = () => {
@@ -88,7 +90,8 @@ const leaveLobby = async () => {
     //清空store内房间和玩家
     lobbyStore.players = []
     lobbyStore.isInRoom = false
-    lobbyStore.roomlist = []
+    lobbyStore.currentRoom = undefined
+    lobbyStore.rooms.clear()
     //清空store内账号
     accountStore.username = ""
     accountStore.jwt = ""

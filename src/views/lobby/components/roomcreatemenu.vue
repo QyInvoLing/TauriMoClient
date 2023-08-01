@@ -23,19 +23,19 @@ const emit = defineEmits<{
 const clickCreateRoomButton = async () => {
     if (roomName.value == "") {
         return Message.error({
-            content: '请输入房间名!'
+            content: '请输入房间名'
         })
     }
     loading.value = true
     let createRoomResult = await createRoom({ name: roomName.value, password: roomPassword.value })
     if (createRoomResult.result == "error" || createRoomResult.key == undefined) {//创建房间失败，弹个报错
         Message.error({
-            content: '创建房间失败!'
+            content: '创建房间失败'
         })
         loading.value = false
     } else {//成功了
         Message.success({
-            content: '创建房间成功!'
+            content: '创建房间成功'
         })
         loading.value = false
         //进房
