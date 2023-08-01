@@ -1,8 +1,8 @@
 <template>
     <div class="room-container">{{ lobbyStore.currentRoom }}<a-button @click="clickLeaveRoomButton">退出房间</a-button>
         <roomchat :room-key="lobbyStore.currentRoom?.key" />
-        <roominfo :is-owner="isOwner" />
-        <roomplayerlist :player-list="lobbyStore.currentRoom == undefined ? [] : lobbyStore.currentRoom?.players" />
+        <roominfo :is-owner="isOwner"  />
+        <roomplayerlist :username="accountStore.username" :is-owner="isOwner" :player-list="lobbyStore.currentRoom == undefined ? [] : lobbyStore.currentRoom?.players" />
     </div>
 </template>
 <script setup lang="ts">

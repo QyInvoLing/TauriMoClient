@@ -15,11 +15,12 @@ export const connect = (jwt: string) => {
         const ping = () => { sendMessage("ping") }
         const pingTimer = setInterval(ping, 3000)
         ws.onclose = () => {//注册断开回调，以便于在连接断开时进行处理
+            console.log("[INFO]触发所有的close回调并清除timer:",pingTimer)
             executeCallbacks("close")
             for (let i = 0; i < callbacks["close"].length; i++) {
                 unregisterCallback("close",callbacks["close"][i].name)
             }
-            clearInterval(pingTimer)
+            window.clearInterval(pingTimer)//这里没办法清除，晚点再改
             reject()
         }
         ws.onopen = () => {// 连接建立后

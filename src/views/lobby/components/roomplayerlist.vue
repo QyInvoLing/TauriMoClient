@@ -1,33 +1,55 @@
 <template>
-    <a-table :columns="columns" :data="playerList">
-
+    <a-table :columns="columns" :data="props.playerList" :pagination="false">
         <template #side="{ record }">
-            <a-select v-model="record.side" @change="() => {  }">
-                <a-option v-for="sideOption of sideOptions" :label="sideOption.label" :value="sideOption.value" /> 
+            <a-select v-if="props.isOwner || props.username == record.username" v-model="record.side"
+                @change="tryChangePlayerCombatSettings(record)">
+                <a-option v-for="sideOption of sideOptions" :label="sideOption.label" :value="sideOption.value" />
             </a-select>
+            <div v-else>{{ getLabel(record.side, sideOptions) }}</div>
         </template>
         <template #color="{ record }">
-            <a-select v-model="record.color" @change="() => {   }">
-                <a-option v-for="colorOption of colorOptions" :label="colorOption.label" :value="colorOption.value" /> 
+            <a-select v-if="props.isOwner || props.username == record.username" v-model="record.color"
+                @change="tryChangePlayerCombatSettings(record)">
+                <a-option v-for="colorOption of colorOptions" :label="colorOption.label" :value="colorOption.value" />
             </a-select>
+            <div v-else>{{ getLabel(record.color, colorOptions) }}</div>
         </template>
-        
+        <template #team="{ record }">
+            <a-select v-if="props.isOwner || props.username == record.username" v-model="record.team"
+                @change="tryChangePlayerCombatSettings(record)">
+                <a-option v-for="teamOption of teamOptions" :label="teamOption.label" :value="teamOption.value" />
+            </a-select>
+            <div v-else>{{ getLabel(record.team, teamOptions) }}</div>
+        </template>
+        <template #location="{ record }">
+            <a-select v-if="props.isOwner || props.username == record.username" v-model="record.location"
+                @change="tryChangePlayerCombatSettings(record)">
+                <a-option v-for="locationOption of locationOptions" :label="locationOption.label"
+                    :value="locationOption.value" />
+            </a-select>
+            <div v-else>{{ getLabel(record.location, locationOptions) }}</div>
+        </template>
     </a-table>
 </template>
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { onMounted, onUnmounted } from 'vue'
 import { PlayerInRoom } from '@/api/websocket/room'
+import { useLobbyStore } from '@/store/lobby'
+import { registerCallback, unregisterCallback } from '@/api/websocket'
+import { changePlayerCombatSettings, sideOptions, colorOptions, teamOptions, locationOptions } from '@/api/websocket/room'
+const lobbyStore = useLobbyStore()
 const props = defineProps<{
-    playerList: PlayerInRoom[]
+    playerList: PlayerInRoom[],
+    isOwner: Boolean,
+    username: string
 }>()
-//机器人位的数量
-const botSlotAccount = computed(() => {
-    return 8 - props.playerList.length
-})
-const options = {
-    Beijing: ['Haidian', 'Chaoyang', 'Changping'],
-    Sichuan: ['Chengdu', 'Mianyang', 'Aba'],
-    Guangdong: ['Guangzhou', 'Shenzhen', 'Shantou']
+// //机器人位的数量
+// const botSlotAccount = computed(() => {
+//     return 8 - props.playerList.length
+// })
+const getLabel = (value: any, options: { label: string, value: any }[]) => {
+    console.log("getting label for", value, "from", options)
+    return options.filter(option => option.value == value)[0].label
 }
 const columns = [{
     title: '用户',
@@ -50,100 +72,30 @@ const columns = [{
     dataIndex: 'location',
     slotName: 'location'
 }]
-/**
- * 注意，这些内容应该是从游戏文件夹读取的，但是现在我暂时不想写
- * 
- * 所以临时写死逻辑
- */
-const sideOptions = [ {
-    label: "观察者",
-    value: -2
-}, {
-    label: "随机阵营",
-    value: -1
-}, {
-    label: "US",
-    value: 0
-}, {
-    label: "EA",
-    value: 1
-}, {
-    label: "PF",
-    value: 2
-}, {
-    label: "RU",
-    value: 3
-}, {
-    label: "LC",
-    value: 4
-}, {
-    label: "CN",
-    value: 5
-}, {
-    label: "PC",
-    value: 6
-}, {
-    label: "SC",
-    value: 7
-}, {
-    label: "HQ",
-    value: 8
-}, {
-    label: "HH",
-    value: 9
-}, {
-    label: "WC",
-    value: 10
-}, {
-    label: "LB",
-    value: 11
+const tryChangePlayerCombatSettings = async (playerInRoom: any) => {//arco的组件可以直接把被改变的表格行对应的对象传进来，在这里也就是PlayerInRoom对象
+    if (lobbyStore.currentRoom == undefined) {
+        return 0 as never
+    }
+    await changePlayerCombatSettings({ key: lobbyStore.currentRoom.key, player: playerInRoom })
 }
-]
-const colorOptions = [  {
-    label: "随机颜色",
-    value: -1
-}, {
-    label: "墨绿色",
-    value: 0
-}, {
-    label: "红色",
-    value: 1
-}, {
-    label: "青色",
-    value: 2
-}, {
-    label: "浅绿色",
-    value: 3
-}, {
-    label: "紫色",
-    value: 4
-}, {
-    label: "黄色",
-    value: 5
-}, {
-    label: "蓝色",
-    value: 6
-}, {
-    label: "橙色",
-    value: 7
-}, {
-    label: "紫红色",
-    value: 8
-}, {
-    label: "棕色",
-    value: 9
-}, {
-    label: "绿色",
-    value: 10
-}, {
-    label: "深红色",
-    value: 11
-}, {
-    label: "天蓝色",
-    value: 12
-}
-]
- 
-const data = ref([{ username: "test", side: -1, color: -1, team: 0, location: 0 }])
+onMounted(async () => {
+    //收到玩家改变战斗设置的回调
+    registerCallback("playerChangeCombatSettings", "roomplayerlist-playerChangeCombatSettings", (data: { key: number, player: PlayerInRoom }) => {
+        console.log(`[INFO]房间${data.key}中有玩家战斗设置变更：`, data.player)
+        //把currentRoom和Rooms都变掉
+        let room = lobbyStore.rooms.get(data.key)
+        if (room == undefined) { return 0 as never }
+        for (let i = 0; i < room.players.length; i++) {//变更room
+            if (room.players[i].username == data.player.username) {
+                room.players[i] = data.player
+                lobbyStore.currentRoom = room//变更currentRoom
+                break
+            }
+        }
 
+    })
+})
+onUnmounted(() => {
+    unregisterCallback("playerChangeCombatSettings", "roomplayerlist-playerChangeCombatSettings")
+})
 </script>

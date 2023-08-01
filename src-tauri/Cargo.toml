@@ -1,8 +1,8 @@
 [package]
 name = "tauri-mo-client"
-version = "0.0.4"
+version = "0.0.5"
 description = "MOuTari"
-authors = ["you"]
+authors = ["QyInvoLing"]
 license = ""
 repository = ""
 edition = "2021"

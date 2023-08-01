@@ -1,5 +1,53 @@
 import { sendRpcMessage } from "@/api/websocket"
 
+//封装房间相关的api
+//创建房间
+interface createRoomRequest {
+    name: string,
+    password: string
+}
+export const createRoom = async (request: createRoomRequest) => {
+    return await sendRpcMessage("createRoom", request) as {
+        result: string,
+        key?: number
+    }
+}
+//进入房间
+interface enterRoomRequest {
+    key: number,
+    password: string
+}
+export const enterRoom = async (request: enterRoomRequest) => {
+    return await sendRpcMessage("enterRoom", request) as { result: "success" | "error", message?: "wrong_password" | "room_not_exist" }
+}
+
+//退出房间
+interface leaveRoomRequest {
+    key: number,
+}
+export const leaveRoom = async (request: leaveRoomRequest) => {
+    return await sendRpcMessage("leaveRoom", request) as { result: string }
+}
+//修改房间设置
+//在房间内更改用户战斗相关设置
+interface changePlayerCombatSettingsRequest {
+    key: number,
+    player:PlayerInRoom
+}
+export const changePlayerCombatSettings = async (request:changePlayerCombatSettingsRequest)=>{
+    return await sendRpcMessage("changePlayerCombatSettings", request) as { result: string }
+}
+//获取房间列表
+export const getRoomList = async () => {
+    return await sendRpcMessage("getRoomList") as { result: string, rooms: Record<number, Room> }
+}
+
+/**
+ * 注意，这些内容应该是从游戏文件夹读取的，但是现在我暂时不想写
+ * 
+ * 所以临时写死逻辑
+ */
+
 export interface Room {//type不应该在这里被定义，以后再改，先实现功能
     key: number,
     name: string,
@@ -38,33 +86,138 @@ enum Location {//0代表随机位，1-8代表地图上的位置。我猜的，�
 enum Side {//-1随机，从零（美国）开始
     Observer = -2, Random = -1, US = 0, EA = 1, PF = 2, RU = 3, LC = 4, CN = 5, PC = 6, SC = 7, HQ = 8, HH = 9, WC = 10, LB = 11
 }
-//封装房间相关的api
-interface createRoomRequest {
-    name: string,
-    password: string
+export const sideOptions = [{
+    label: "观察者",
+    value: -2
+}, {
+    label: "随机阵营",
+    value: -1
+}, {
+    label: "US",
+    value: 0
+}, {
+    label: "EA",
+    value: 1
+}, {
+    label: "PF",
+    value: 2
+}, {
+    label: "RU",
+    value: 3
+}, {
+    label: "LC",
+    value: 4
+}, {
+    label: "CN",
+    value: 5
+}, {
+    label: "PC",
+    value: 6
+}, {
+    label: "SC",
+    value: 7
+}, {
+    label: "HQ",
+    value: 8
+}, {
+    label: "HH",
+    value: 9
+}, {
+    label: "WC",
+    value: 10
+}, {
+    label: "LB",
+    value: 11
 }
-interface createRoomResult {
-    result: string,
-    key?: number
+]
+export const colorOptions = [{
+    label: "随机颜色",
+    value: -1
+}, {
+    label: "墨绿色",
+    value: 0
+}, {
+    label: "红色",
+    value: 1
+}, {
+    label: "青色",
+    value: 2
+}, {
+    label: "浅绿色",
+    value: 3
+}, {
+    label: "紫色",
+    value: 4
+}, {
+    label: "黄色",
+    value: 5
+}, {
+    label: "蓝色",
+    value: 6
+}, {
+    label: "橙色",
+    value: 7
+}, {
+    label: "紫红色",
+    value: 8
+}, {
+    label: "棕色",
+    value: 9
+}, {
+    label: "绿色",
+    value: 10
+}, {
+    label: "深红色",
+    value: 11
+}, {
+    label: "天蓝色",
+    value: 12
 }
-export const createRoom = async (request: createRoomRequest) => {
-    return await sendRpcMessage("createRoom", request) as createRoomResult
-}
-interface enterRoomRequest {
-    key: number,
-    password: string
-}
-export const enterRoom = async (request: enterRoomRequest) => {
-    return await sendRpcMessage("enterRoom", request) as { result: "success" | "error", message?: "wrong_password" | "room_not_exist" }
-}
-interface leaveRoomRequest {
-    key: number,
-}
-export const leaveRoom = async (request: leaveRoomRequest) => {
-    return await sendRpcMessage("leaveRoom", request) as { result: string }
-}
+]
 
-//获取房间列表
-export const getRoomList = async () => {
-    return await sendRpcMessage("getRoomList") as { result: string, rooms: Record<number, Room> }
+export const teamOptions = [{
+    label: "无",
+    value: 0
+}, {
+    label: "A",
+    value: 1
+}, {
+    label: "B",
+    value: 2
+}, {
+    label: "C",
+    value: 3
+}, {
+    label: "D",
+    value: 4
 }
+]
+export const locationOptions = [{
+    label: "随机位置",
+    value: 0
+}, {
+    label: "1",
+    value: 1
+}, {
+    label: "2",
+    value: 2
+}, {
+    label: "3",
+    value: 3
+}, {
+    label: "4",
+    value: 4
+}, {
+    label: "5",
+    value: 5
+}, {
+    label: "6",
+    value: 6
+}, {
+    label: "7",
+    value: 7
+}, {
+    label: "8",
+    value: 8
+}
+]
