@@ -12,6 +12,14 @@ export interface Room {//type不应该在这里被定义，以后再改，先实
         techlevel: TechLevel
     }
 }
+export interface PlayerInRoom {
+    username: string
+    side: Side
+    color: Color
+    team: TeamOption
+    location: Location
+
+}
 enum Credits {
     C5000 = 5000, C10000 = 10000, C20000 = 20000, C30000 = 30000, C40000 = 40000, C50000 = 50000
 }
@@ -19,7 +27,7 @@ enum TechLevel {
     T4 = 4, T5 = 5, T6 = 6, T7 = 7, T8 = 8, T9 = 9, T10 = 10
 }
 enum Color {//这不是我猜的，以后可能要改成从文件里读取
-    Random=-1,Teal = 0, Red = 1, Aqua = 2, Lime = 3, Purple = 4, Yellow = 5, Blue = 6, Orange = 7, Magenta = 8, Brown = 9, Green = 10, Crimson = 11, Sky = 12
+    Random = -1, Teal = 0, Red = 1, Aqua = 2, Lime = 3, Purple = 4, Yellow = 5, Blue = 6, Orange = 7, Magenta = 8, Brown = 9, Green = 10, Crimson = 11, Sky = 12
 }
 enum TeamOption {//1234代表ABCD，0代表无。我猜的，以后还可能改
     NoTeam = 0, A = 1, B = 2, C = 3, D = 4
@@ -27,12 +35,8 @@ enum TeamOption {//1234代表ABCD，0代表无。我猜的，以后还可能改
 enum Location {//0代表随机位，1-8代表地图上的位置。我猜的，以后还可能改
     Random = 0, Position1 = 1, Position2 = 2, Position3 = 3, Position4 = 4, Position5 = 5, Position6 = 6, Position7 = 7, Position8 = 8
 }
-interface PlayerInRoom {
-    username: string,
-    color: Color,
-    team: TeamOption
-    location: Location
-
+enum Side {//-1随机，从零（美国）开始
+    Observer = -2, Random = -1, US = 0, EA = 1, PF = 2, RU = 3, LC = 4, CN = 5, PC = 6, SC = 7, HQ = 8, HH = 9, WC = 10, LB = 11
 }
 //封装房间相关的api
 interface createRoomRequest {
@@ -62,5 +66,5 @@ export const leaveRoom = async (request: leaveRoomRequest) => {
 
 //获取房间列表
 export const getRoomList = async () => {
-    return await sendRpcMessage("getRoomList") as { result: string, rooms: Record<number,Room> }
+    return await sendRpcMessage("getRoomList") as { result: string, rooms: Record<number, Room> }
 }

@@ -95,6 +95,7 @@ const handleSubmit = async () => {
             saveHost(loginHost.value)//登录成功，说明这个服务器是可以用的
             await redirectToLobby()
         } else {
+            loading.value = false
             Message.error({
                 content: '登录失败:' + loginResponse.data.message
             })

@@ -71,6 +71,7 @@ const handleSubmit = async () => {
             await await sleep(1000)
             backToLogin()
         } else {
+            loading.value = false
             Message.error({
                 content: '注册失败:' + registerResponse.data.message
             })

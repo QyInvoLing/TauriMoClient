@@ -131,9 +131,9 @@ const confirmEnterRoom = async (key: number, password: string = "") => {
 onMounted(async () => {
     //获取初始房间列表
     let { rooms } = await getRoomList()
-    for(const key in rooms){
-        if(rooms.hasOwnProperty(key)){
-            lobbyStore.rooms.set(Number(key),rooms[key])
+    for (const key in rooms) {
+        if (rooms.hasOwnProperty(key)) {
+            lobbyStore.rooms.set(Number(key), rooms[key])
         }
     }
     // lobbyStore.rooms = rooms
@@ -147,14 +147,14 @@ onMounted(async () => {
     registerCallback("roomDestroyed", "roomDestroyed", (data: { room: Room }) => {
         console.log(`[INFO]房间${data.room}销毁.`)
         //如果这个房间是自己现在的房间，就设置客户端的房间状态
-        if (data.room.key === lobbyStore.currentRoom?.key ) {
+        if (data.room.key === lobbyStore.currentRoom?.key) {
             emit("leaveRoom")
-            if(accountStore.username !== data.room.players[0].username){//房主不是自己才需要提示
+            if (accountStore.username !== data.room.players[0].username) {//房主不是自己才需要提示
                 Message.info({
-                content: '房主销毁了房间'
-            })
+                    content: '房主销毁了房间'
+                })
             }
-            
+
         }
 
         //一定要对比key才行，之前这里直接用indexOf出错了，我是傻逼
@@ -164,7 +164,7 @@ onMounted(async () => {
     registerCallback("playerJoinRoom", "roomlist-playerJoinRoom", (data: { room: Room, player: string }) => {
         console.log(`[INFO]用户${data.player}进入房间${data.room.key}`)
         let room = lobbyStore.rooms.get(data.room.key)
-        room?.players.push({ username: data.player, color: -1, team: 0, location: 0 })
+        room?.players.push({ username: data.player, side: -1, color: -1, team: 0, location: 0 })
     })
     //收到玩家退房消息时的回调
     registerCallback("playerLeaveRoom", "roomlist-playerLeaveRoom", (data: { room: Room, player: string }) => {
